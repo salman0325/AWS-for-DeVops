@@ -2,7 +2,7 @@ Sure! Here's all your previous questions and answers collected into one file-fri
 
 ---
 
-# 💻 AWS basic********************concept
+# 💻 AWS basic_concept
 
 ---
 
