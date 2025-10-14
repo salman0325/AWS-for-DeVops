@@ -2,18 +2,7 @@ Sure! Here's all your previous questions and answers collected into one file-fri
 
 ---
 
-# 💻 AWS Concepts Summary
-
----
-
-### ❓ Q: I have 2 EC2 instances on AWS and want to access one from the other. How?
-
-**A:**
-
-1. **Security Group**: Allow inbound access in EC2-B's security group from EC2-A (use IP or Security Group ID).
-2. **Use Private IP**: Always connect via private IP for internal communication.
-3. **SSH Access**: Make sure the right key is present and permissions are set.
-4. **Same VPC Preferred**: Easier if both instances are in the same VPC.
+# 💻 AWS basic********************concept
 
 ---
 
