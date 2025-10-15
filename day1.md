@@ -1,7 +1,3 @@
-Sure! Here's all your previous questions and answers collected into one file-friendly format. You can copy and paste this into a `.txt` or `.md` file for GitHub.
-
----
-
 # 💻 AWS basic_concept
 
 ---
