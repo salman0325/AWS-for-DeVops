@@ -1,8 +1,4 @@
-Below is a ready-to-paste **README.md** content that collects all previous answers (AWS instance types summary, pricing options, how to create/access Ubuntu & Windows EC2, install Remmina & connect, instance metadata & user-data). Copy the whole block into `README.md`.
 
----
-
-# AWS Quick Notes
 
 ## 1 — Common AWS EC2 Instance Types (short)
 
@@ -147,18 +143,4 @@ sudo cat /var/log/cloud-init-output.log
 
 ---
 
-## 7 — Quick Tips
-
-* Save your `.pem` securely. It's required to SSH and to get Windows password.
-* Open only required ports in Security Group (SSH 22, RDP 3389, HTTP 80).
-* Use Spot for non-critical batch jobs; use RI/Savings Plans for steady workloads.
-* Use metadata for scripts that need instance info (instance-id, region, etc.).
-
----
-
-If you want, I can:
-
-* shorten this file more, or
-* create a version in Urdu/Hinglish, or
-* add Terraform/CLI examples for launching instances. Which would you like?
-
+by made----------salman_khan------------>
