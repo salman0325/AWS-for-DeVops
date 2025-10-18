@@ -1,0 +1,115 @@
+
+# 🚀 AWS EC2 + ALB Setup Guide
+
+This project sets up:
+- Two EC2 instances with web servers (Apache)
+- An Application Load Balancer (ALB)
+- A target group attached to the ALB
+- All traffic is routed only via the Load Balancer — direct instance access via IP is **blocked**
+
+---
+
+## 📌 Step 1: Launch Two EC2 Instances
+
+1. Go to AWS Console > EC2 > Launch Instance
+2. Launch two Amazon Linux instances (e.g., `t2.micro`)
+3. In **User Data** (or via SSH), install Apache:
+
+```bash
+# For Instance 1:
+sudo yum install httpd -y
+sudo systemctl start httpd
+sudo systemctl enable httpd
+echo "Hello from Instance 1" | sudo tee /var/www/html/index.html
+
+# For Instance 2:
+echo "Hello from Instance 2" | sudo tee /var/www/html/index.html
+````
+
+4. Make sure both instances are in the **same VPC** and **different Availability Zones** (for HA)
+
+---
+
+## 📌 Step 2: Configure Security Group
+
+Create or modify a **Security Group** with:
+
+* ✅ Allow **HTTP (80)** from **Anywhere (0.0.0.0/0)** (for Load Balancer)
+* ❌ **Remove SSH or HTTP access from public IP** (we want only ALB access)
+
+---
+
+## 📌 Step 3: Create a Target Group
+
+1. Go to EC2 Console > **Target Groups**
+2. Click **Create Target Group**
+3. Choose:
+
+   * Target Type: `Instances`
+   * Protocol: `HTTP`
+   * Port: `80`
+4. Register the two EC2 instances
+5. Click **Create**
+
+---
+
+## 📌 Step 4: Create Application Load Balancer (ALB)
+
+1. Go to EC2 > Load Balancers > **Create Load Balancer**
+2. Choose **Application Load Balancer**
+3. Set:
+
+   * Name: `my-alb`
+   * Scheme: `Internet-facing`
+   * Listener: `HTTP : 80`
+4. Select at least **2 subnets** in different **Availability Zones**
+5. Security Group:
+
+   * Allow only **port 80 (HTTP)**
+6. Select the **Target Group** created earlier
+7. Create the ALB
+
+---
+
+## 📌 Step 5: Test the Setup
+
+1. Go to **EC2 > Load Balancers**
+2. Copy the **DNS name** of your ALB
+3. Open it in your browser:
+
+```
+http://<your-alb-dns-name>
+```
+
+🔄 Refresh the page — you should see responses alternating between:
+
+* `Hello from Instance 1`
+* `Hello from Instance 2`
+
+---
+
+## 🔒 Step 6: Block Direct IP Access to EC2s
+
+* Go to **EC2 > Security Groups**
+* For your instance security group:
+
+  * Remove all inbound rules except:
+
+    * ✅ HTTP (80) from the **Load Balancer’s security group** only
+
+💡 This ensures users can only access your application via the ALB.
+
+---
+
+## ✅ Summary
+
+| Component     | Description                          |
+| ------------- | ------------------------------------ |
+| EC2 Instances | Amazon Linux + Apache web server     |
+| ALB           | Application Load Balancer, HTTP only |
+| Target Group  | Both instances registered            |
+| Security      | Only ALB can access EC2s             |
+| Access URL    | Use ALB DNS only                     |
+
+---
+
