@@ -135,10 +135,56 @@ kubectl get nodes
 You should see 2 nodes in `Ready` state.
 
 ---
+# Self-managed Kubernetes cluster on 2 EC2 instances with kubeadm
+```Setup Summary:
+
+1 EC2 instance → Master node (Control plane)
+
+1 EC2 instance → Worker node
+
+Dono instances pe Docker or container runtime, kubeadm, kubelet, kubectl install karna hoga.
+
+Step 1: Prepare both EC2 instances
+
+Ubuntu 20.04 or similar install hona chahiye.
+
+Security groups open hone chahiye (ports 6443 for API server, 2379-2380 etcd, 10250 kubelet, 30000-32767 NodePort range, etc.)
 
 ## 🧱 Step 9: Create Namespace and Deployment (NGINX)
 
 Create a file named `nginx-deployment.yaml`:
+```
+```install docker on both machin
+sudo apt-get update
+sudo apt-get install -y docker.io
+sudo systemctl enable docker
+sudo systemctl start docker
+```
+```Install kubeadm, kubelet, kubectl on both machines
+sudo apt-get update && sudo apt-get install -y apt-transport-https curl
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+sudo apt-get update
+sudo apt-get install -y kubelet kubeadm kubectl
+sudo apt-mark hold kubelet kubeadm kubectl
+```
+```Initialize Kubernetes master node (only on master EC2)
+sudo kubeadm init --pod-network-cidr=192.168.0.0/16
+```
+```Setup kubectl for regular user on master
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+```
+```: Install network plugin (e.g., Calico or Flannel) on master exmaple (calico)
+kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
+```
+```join workder node to cluster
+sudo kubeadm join <MASTER_IP>:6443 --token <token> --discovery-token-ca-cert-hash sha256:<hash>
+```
+```verify cluster on master
+kubectl get nodes
+```
 
 ```yaml
 apiVersion: apps/v1
