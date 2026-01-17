@@ -256,4 +256,109 @@ eksctl delete cluster --name my-eks-cluster --region us-east-1
 * Ensure EC2 has permissions via IAM Role or configured credentials.
 
 ---
+# suing terraform to create a eks cluster 
+```variable.tf
+variable "aws_region" {
+  description = "AWS region jahan cluster banana hai"
+  default     = "us-east-1"
+}
+
+variable "cluster_name" {
+  description = "EKS Cluster ka naam"
+  default     = "my-eks-cluster"
+}
+
+variable "cluster_version" {
+  description = "EKS cluster version"
+  default     = "1.29"
+}
+
+variable "node_instance_type" {
+  description = "EC2 instance type for worker nodes"
+  default     = "t3.medium"
+}
+
+variable "desired_capacity" {
+  description = "Number of desired worker nodes"
+  default     = 2
+}
+
+variable "max_capacity" {
+  description = "Maximum worker nodes"
+  default     = 3
+}
+
+variable "min_capacity" {
+  description = "Minimum worker nodes"
+  default     = 1
+}
+```
+```provider.tf
+terraform {
+  required_version = ">= 1.0"
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 4.0"
+    }
+  }
+}
+
+provider "aws" {
+  region = var.aws_region
+}
+```
+```main.tf
+data "aws_vpc" "default" {
+  default = true
+}
+
+data "aws_subnets" "default" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.default.id]
+  }
+}
+
+module "eks" {
+  source          = "terraform-aws-modules/eks/aws"
+  version         = "19.6.0"
+
+  cluster_name    = var.cluster_name
+  cluster_version = var.cluster_version
+  vpc_id          = data.aws_vpc.default.id
+  subnets         = data.aws_subnets.default.ids
+
+  node_groups = {
+    eks_nodes = {
+      desired_capacity = var.desired_capacity
+      max_capacity     = var.max_capacity
+      min_capacity     = var.min_capacity
+
+      instance_type = var.node_instance_type
+    }
+  }
+}
+```
+```output.tf
+output "cluster_endpoint" {
+  description = "EKS Cluster API endpoint"
+  value       = module.eks.cluster_endpoint
+}
+
+output "cluster_security_group_id" {
+  description = "Security group ID of the EKS cluster"
+  value       = module.eks.cluster_security_group_id
+}
+
+output "node_group_role_arn" {
+  description = "IAM Role ARN used by worker nodes"
+  value       = module.eks.node_groups["eks_nodes"].iam_role_arn
+}
+```
+```run the command
+terraform init
+terraform plan
+terraform apply
+```
 
