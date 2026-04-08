@@ -1,3 +1,7 @@
+http://downloadlynet.ir/
+qbtorrant
+https://thepiratebay.org
+
 ### 🔹 What is EBS (Elastic Block Store)?
 
 * Persistent block storage for EC2 instances
